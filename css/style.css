@@ -150,6 +150,15 @@ nav a.active {
   text-align: center;
   font-family: monospace;
 }
+canvas.background-canvas {
+  display: none; /* Hide default unless used */
+}
+
+#homeCircuitCanvas,
+#aboutCircuitCanvas,
+#projectsBgCanvas {
+  display: block;
+}
 
 .about-terminal h2 {
   font-size: 2.5rem;
@@ -175,8 +184,12 @@ nav a.active {
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 0; /* <- Ensure it's under content */
   background: #0a0a0a;
+}
+.projects-container {
+  position: relative;
+  z-index: 2;
 }
 
 .projects-container {
@@ -217,6 +230,8 @@ nav a.active {
 
 .project-popup {
   display: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
   position: fixed;
   top: 10%;
   left: 50%;
@@ -279,6 +294,9 @@ nav a.active {
 .popup-images img.show {
   opacity: 1;
   transform: translateY(0);
+}
+.project-popup[style*="display: block"] {
+  opacity: 1;
 }
 .popup-link {
   margin-top: 2rem;
