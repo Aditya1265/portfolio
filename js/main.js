@@ -947,3 +947,80 @@ setInterval(drawALU, 70);
 
 
 
+(function () {
+  const canvas = document.getElementById('homeCircuitCanvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, nodes = [], traces = [];
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    initNetwork();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function initNetwork() {
+    nodes = [];
+    traces = [];
+    const cols = Math.ceil(width / 80);
+    const rows = Math.ceil(height / 80);
+
+    for (let y = 0; y <= rows; y++) {
+      for (let x = 0; x <= cols; x++) {
+        let nx = x * 80 + (Math.random() - 0.5) * 20;
+        let ny = y * 80 + (Math.random() - 0.5) * 20;
+        nodes.push({ x: nx, y: ny });
+      }
+    }
+
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dist < 100) {
+          traces.push({ a, b, phase: Math.random() * 100 });
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.fillStyle = '#0b0b0b';
+    ctx.fillRect(0, 0, width, height);
+
+    traces.forEach(t => {
+      const { a, b } = t;
+      ctx.strokeStyle = 'rgba(0, 255, 200, 0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+
+      // Signal pulse
+      const progress = ((performance.now() / 50 + t.phase) % 100) / 100;
+      const sx = a.x + (b.x - a.x) * progress;
+      const sy = a.y + (b.y - a.y) * progress;
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 255, 200, 0.8)';
+      ctx.shadowColor = '#00ffc8';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+
+    nodes.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,255,200,0.3)';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+})();
